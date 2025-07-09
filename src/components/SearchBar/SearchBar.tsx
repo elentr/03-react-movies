@@ -9,18 +9,14 @@ interface SearchBarProps {
 export default function SearchBar({ onSubmit }: SearchBarProps) {
   const [value, setValue] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (value.trim() === '') {
+  const handleFormAction = (formData: FormData) => {
+    const query = formData.get('query') as string;
+    if (!query || query.trim() === '') {
       toast.error('Please enter your search query.');
       return;
     }
-    onSubmit(value);
-    setValue('');
+    onSubmit(query);
+    setValue(''); // очищення інпуту
   };
 
   return (
@@ -34,13 +30,13 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
         >
           Powered by TMDB
         </a>
-        <form className={css.form} onSubmit={handleSubmit}>
+        <form className={css.form} action={handleFormAction}>
           <input
             className={css.input}
             type="text"
             name="query"
             value={value}
-            onChange={handleChange}
+            onChange={e => setValue(e.target.value)}
             autoComplete="off"
             placeholder="Search movies..."
             autoFocus
